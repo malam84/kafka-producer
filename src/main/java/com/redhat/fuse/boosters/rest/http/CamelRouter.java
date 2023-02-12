@@ -56,12 +56,13 @@ public class CamelRouter extends RouteBuilder {
 		.skipBindingOnErrorCode(false) 
 		.post("/").type(User.class)
 		.description("Send user")
-		.param().name(HEADER_BUSINESSID).type(RestParamType.header).description("Business transaction id. Defaults to a random uuid").required(false).dataType("string").endParam()
-		.responseMessage().code(200).responseModel(ApiResponse.class).endResponseMessage() //OK
+	//	.param().name(HEADER_BUSINESSID).type(RestParamType.header).description("Business transaction id. Defaults to a random uuid").required(false).dataType("string").endParam()
+	//	.responseMessage().code(200).responseModel(ApiResponse.class).endResponseMessage() //OK
 		.route().routeId("post-user")
 		.convertBodyTo(String.class)
 		.log("User received: ${body}").id("received-user") //This step gets an id, so we can refer it in test
-		.setHeader(KafkaConstants.KEY, constant("{{kafka.key}}"))
+		.setHeader(KafkaConstants.KEY,  constant("Camel"))
+		//.to("kafka:{{kafka.topic}}?serializerClass=org.apache.kafka.common.serialization.ByteArraySerializer&brokers={{kafka-url}}")
 		.to(restRouteOut)
         .log("Message sent to kafka with headers ${in.headers}; body: ${body}").id("kafka-producer-logger")
         .bean(printEvents)

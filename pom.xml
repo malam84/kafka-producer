@@ -113,9 +113,25 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-bean-validator-starter</artifactId>
     </dependency>
-    <dependency>
-			  <groupId>org.apache.camel</groupId>
-    <artifactId>camel-kafka</artifactId>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jacksonxml-starter</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-netty4-starter</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.camel</groupId>
+		  <artifactId>camel-stax-starter</artifactId>		  
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-kafka-starter</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-avro-starter</artifactId>
 		</dependency>
   </dependencies>
   <build>
