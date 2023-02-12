@@ -32,6 +32,8 @@ public class CamelRouter extends RouteBuilder {
 	
     @Override
     public void configure() throws Exception {
+    	
+    	System.out.println("--------------restRouteOut-------------------" +restRouteOut);
 
         // @formatter:off
         restConfiguration()
