@@ -2,6 +2,7 @@ package com.redhat.fuse.boosters.rest.http;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.camel.CamelExecutionException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -21,13 +22,13 @@ import com.redhat.fuse.boosters.rest.http.pojo.User;
 public class CamelRouter extends RouteBuilder {
 
 
-	@Value("${camel.route.sendRestOut}")
-	private String restRouteOut;
-
 	public final static String HEADER_BUSINESSID = "businessId"; //Optional custom correlation id received/sent from/to external systems
 
 	@Autowired
     private KafkaMsgProcessor printEvents;
+	
+	@Value("${kafka.component.uri}")
+	private String restRouteOut;
 	
     @Override
     public void configure() throws Exception {
@@ -45,6 +46,9 @@ public class CamelRouter extends RouteBuilder {
             .component("servlet")
             .bindingMode(RestBindingMode.json);
         
+        onException(CamelExecutionException.class)
+        .to("log:exception-logger");
+        
         rest("/user").description("User API")
         .produces(MediaType.APPLICATION_JSON).consumes(MediaType.APPLICATION_JSON)
 		.skipBindingOnErrorCode(false) 
@@ -55,8 +59,8 @@ public class CamelRouter extends RouteBuilder {
 		.route().routeId("post-user")
 		.convertBodyTo(String.class)
 		.log("User received: ${body}").id("received-user") //This step gets an id, so we can refer it in test
-		.setHeader(KafkaConstants.KEY, constant("fuse-demo"))
-		.to("kafka:{{kafka.component.uri}}")
+		.setHeader(KafkaConstants.KEY, constant("{{kafka.key}}"))
+		.to(restRouteOut)
         .log("Message sent to kafka with headers ${in.headers}; body: ${body}").id("kafka-producer-logger")
         .bean(printEvents)
 		.endRest();
