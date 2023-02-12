@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.redhat.fuse.boosters.rest.http.pojo.ApiResponse;
 import com.redhat.fuse.boosters.rest.http.pojo.User;
 
 /**
@@ -32,8 +31,6 @@ public class CamelRouter extends RouteBuilder {
 	
     @Override
     public void configure() throws Exception {
-    	
-    	System.out.println("--------------restRouteOut-------------------" +restRouteOut);
 
         // @formatter:off
         restConfiguration()
@@ -59,10 +56,9 @@ public class CamelRouter extends RouteBuilder {
 	//	.param().name(HEADER_BUSINESSID).type(RestParamType.header).description("Business transaction id. Defaults to a random uuid").required(false).dataType("string").endParam()
 	//	.responseMessage().code(200).responseModel(ApiResponse.class).endResponseMessage() //OK
 		.route().routeId("post-user")
-		.convertBodyTo(String.class)
+	//	.convertBodyTo(String.class)
 		.log("User received: ${body}").id("received-user") //This step gets an id, so we can refer it in test
-		.setHeader(KafkaConstants.KEY,  constant("Camel"))
-		//.to("kafka:{{kafka.topic}}?serializerClass=org.apache.kafka.common.serialization.ByteArraySerializer&brokers={{kafka-url}}")
+		.setHeader(KafkaConstants.KEY, constant("{{kafka.key}}"))
 		.to(restRouteOut)
         .log("Message sent to kafka with headers ${in.headers}; body: ${body}").id("kafka-producer-logger")
         .bean(printEvents)
